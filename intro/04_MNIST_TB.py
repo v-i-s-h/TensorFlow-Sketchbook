@@ -60,7 +60,7 @@ with tf.name_scope( "Eval" ):
 
 # Make train graph
 with tf.name_scope( "Train" ):
-    train   = tf.train.GradientDescentOptimizer(0.5).minimize(xEnt)
+    train   = tf.train.GradientDescentOptimizer(0.2).minimize(xEnt)
 
 # Create a summary
 tf.summary.scalar( "xEnt", xEnt )
