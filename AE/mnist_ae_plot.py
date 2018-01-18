@@ -41,7 +41,7 @@ x_test  = x_test.reshape( (len(x_test),np.prod(x_test.shape[1:])) )
 encoded_imgs    = encoder.predict( x_test )
 decoded_imgs    = decoder.predict( encoded_imgs )
 
-n = 10
+n = 25
 plt.figure( figsize=(20,4) )
 for i in range(n):
     ax  = plt.subplot( 2, n, i+1 )
