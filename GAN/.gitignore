@@ -1,3 +1,4 @@
 MNIST_data/*
 01_vanilla/checkpoints/*
 01_vanilla/train_samples.pkl
+02_vanilla/out/*
