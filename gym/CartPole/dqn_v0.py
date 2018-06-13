@@ -5,14 +5,13 @@ import random
 import numpy as np
 
 import tensorflow as tf
-from tensorflow.python import keras
 
-from keras.models import Sequential
-from keras import optimizers
-from keras.layers.core import Dense, Dropout, Activation
-from keras.layers.normalization import BatchNormalization
-from keras.layers.advanced_activations import LeakyReLU
-from keras.regularizers import l2
+from tensorflow.python.keras.models import Sequential
+from tensorflow.python.keras import optimizers
+from tensorflow.python.keras.layers import Dense, Dropout, Activation
+from tensorflow.python.keras.layers import BatchNormalization
+from tensorflow.python.keras.layers import LeakyReLU
+from tensorflow.python.keras.regularizers import l2
 
 # Memory Buffer
 class Memory:
@@ -158,7 +157,7 @@ class DeepQ:
         else:
             model.add( Dense(hiddenLayers[0],
                                 input_shape=(self.input_size,),
-                                init='lecun_uniform') ) 
+                                kernel_initializer='lecun_uniform') ) 
             if activationType == 'LeakyReLU':
                 model.add( LeakyReLU(alpha=0.01) )
             else:
@@ -166,12 +165,12 @@ class DeepQ:
 
             for index in range(1,len(hiddenLayers)):
                 layerSize   = hiddenLayers[index]
-                model.add( Dense(layerSize,init='lecun_uniform') )
+                model.add( Dense(layerSize,kernel_initializer='lecun_uniform') )
                 if activationType == 'LeakyReLU':
                     model.add( LeakyReLU(alpha=0.01) )
                 else:
                     model.add( Activation(activationType) )
-            model.add( Dense(self.output_size,init='lecun_uniform') )
+            model.add( Dense(self.output_size,kernel_initializer='lecun_uniform') )
             model.add( Activation('linear') )
         optimizer   = optimizers.RMSprop( lr = learningRate, rho = 0.9, epsilon = 1e-6 )
         model.compile( loss = "mse", optimizer = optimizer )
@@ -321,10 +320,10 @@ for epoch in xrange(epochs):
         nextState, reward, done, info   = env.step( action )
 
         if t >= 199:
-            print "    **** Reached the end!! :D ****"
+            print( "    **** Reached the end!! :D ****" )
             done    = True
         if done and t < 199:
-            print "    [Decrease reward]    "
+            print( "    [Decrease reward]    " )
 
         deepQ.addMemory( observation, action, nextState, reward, done )
 
@@ -352,7 +351,7 @@ for epoch in xrange(epochs):
         stepCounter += 1
         if stepCounter%updateTargetNetwork  == 0:
             deepQ.updateTargetNetwork()
-            print( "Updating Target Network..." )
+            print( "---------------------Updating Target Network...----------------------" )
     
     explorationRate *= 0.995
     explorationRate = max( 0.05, explorationRate )
