@@ -5,6 +5,11 @@ from pandas import read_csv, DataFrame, concat
 from datetime import datetime
 from matplotlib import pyplot
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+from sklearn.metrics import mean_squared_error
+from tensorflow.python.keras.models import Model, Sequential
+from tensorflow.python.keras.layers import Dense, LSTM
+from numpy import concatenate
+from math import sqrt
 
 # --------------------- Data Cleansing -----------------------------------------------------
 # define parser for date
@@ -27,17 +32,17 @@ print( dataset.head(5) )
 # ------------------------------------------------------------------------------------------
 
 # ------------------ Visualize Data --------------------------------------------------------
-# values = dataset.values
-# # Specify columns to plot
-# groups  = [ 0, 1, 2, 3, 5, 6, 7 ]
-# i = 1
-# # Plot each column
-# pyplot.figure()
-# for group in groups:
-#     pyplot.subplot( len(groups), 1, i )
-#     pyplot.plot( values[:,group] )
-#     pyplot.title( dataset.columns[group], y = 0.5, loc = 'right' )
-#     i += 1
+values = dataset.values
+# Specify columns to plot
+groups  = [ 0, 1, 2, 3, 5, 6, 7 ]
+i = 1
+# Plot each column
+pyplot.figure()
+for group in groups:
+    pyplot.subplot( len(groups), 1, i )
+    pyplot.plot( values[:,group] )
+    pyplot.title( dataset.columns[group], y = 0.5, loc = 'right' )
+    i += 1
 # pyplot.show()
 # ------------------------------------------------------------------------------------------
 
@@ -94,3 +99,42 @@ train_X = train_X.reshape( train_X.shape[0], 1, train_X.shape[1] )
 test_X  = test_X.reshape( test_X.shape[0], 1, test_X.shape[1] )
 print( train_X.shape, train_Y.shape, test_X.shape, test_Y.shape )
 # ------------------------------------------------------------------------------------------
+
+# ------------------- Network Design -------------------------------------------------------
+model   = Sequential()
+model.add( LSTM(50,input_shape=(train_X.shape[1],train_X.shape[2])) )
+model.add( Dense(1) )
+model.compile( loss = 'mae', optimizer = 'adam' )
+# Fit network
+history = model.fit( train_X, train_Y, epochs = 50, batch_size = 72, 
+                        validation_data = (test_X,test_Y), verbose = 2, shuffle = False )
+# Plot history
+pyplot.figure()
+pyplot.plot( history.history['loss'], label = 'train' )
+pyplot.plot( history.history['val_loss'], label = 'test' )
+pyplot.legend()
+# pyplot.show()
+# ------------------------------------------------------------------------------------------
+
+# ----------------- Make Prediction --------------------------------------------------------
+y_hat   = model.predict( test_X )
+test_X  = test_X.reshape( (test_X.shape[0],test_X.shape[2]) )
+# Invert scale for forecast
+inv_yhat    = concatenate( (y_hat,test_X[:,1:]), axis = 1 )
+inv_yhat    = scaler.inverse_transform( inv_yhat )
+inv_yhat    = inv_yhat[:,0]
+# invert the scaling for actual
+test_Y  = test_Y.reshape( len(test_Y), 1 )
+inv_y   = concatenate( (test_Y,test_X[:,1:]), axis = 1 )
+inv_y   = scaler.inverse_transform( inv_y )
+inv_y   = inv_y[:,0]
+# Calculate RMSE
+rmse    = sqrt( mean_squared_error(inv_y,inv_yhat) )
+print( "Test RMSE: {}".format(rmse) )
+# Plot
+pyplot.figure()
+pyplot.plot( inv_y, label = "actual" )
+pyplot.plot( inv_yhat, label = "prediction" )
+pyplot.legend()
+# ------------------------------------------------------------------------------------------
+pyplot.show()
