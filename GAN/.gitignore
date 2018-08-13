@@ -3,3 +3,4 @@ MNIST_data/*
 01_vanilla/train_samples.pkl
 02_vanilla/out/*
 03_CGAN/out/*
+04_WGAN/out/*
