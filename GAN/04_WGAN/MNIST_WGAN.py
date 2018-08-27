@@ -1,7 +1,5 @@
-# Wasserstien-GAN
-# Source: https://wiseodd.github.io/techblog/2017/02/04/wasserstein-gan/
-
-
+# # Wasserstien-GAN
+# # Source: https://wiseodd.github.io/techblog/2017/02/04/wasserstein-gan/
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 import numpy as np
@@ -9,9 +7,12 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import os
 
-mb_size = 128
-Z_dim   = 10
+mb_size = 32
+X_dim = 784
+Z_dim = 10
+H_dim = 128
 
+mnist = input_data.read_data_sets('./../MNIST_data', one_hot=True)
 
 def xavier_init( size ):
     in_dim  = size[0]
@@ -77,7 +78,7 @@ G_loss  = -tf.reduce_mean(D_fake)
 
 clip_D  = [ p.assign(tf.clip_by_value(p,-0.01,0.01)) for p in theta_D ]
 
-D_solver    = tf.train.RMSPropOptimizer( learning_rate = 1e-4 ).minimize( D_loss, var_list = theta_D )
+D_solver    = tf.train.RMSPropOptimizer( learning_rate = 1e-4 ).minimize( -D_loss, var_list = theta_D )
 G_solver    = tf.train.RMSPropOptimizer( learning_rate = 1e-4 ).minimize( G_loss, var_list = theta_G )
 
 mnist   = input_data.read_data_sets( "./../MNIST_data", one_hot = True )
@@ -91,9 +92,11 @@ if not os.path.exists( './out/' ):
 i = 0
 n = 25000
 
+test_sample = sample_Z( 16, Z_dim )
+
 for it in range(n):
     if it%1000 == 0:
-        samples = sess.run( G_sample, feed_dict = {Z:sample_Z(16,Z_dim)} )
+        samples = sess.run( G_sample, feed_dict = {Z:test_sample} )
 
         fig = plot( samples )
         plt.savefig( './out/{}.png'.format(str(i).zfill(3)), bbox_inches = 'tight' )
@@ -110,4 +113,3 @@ for it in range(n):
 
     if it%1000 == 0:
         print( "Epoch {:5d}/{:5d}    D_loss: {:5.4f}    G_loss: {:5.4f}".format(it,n,D_loss_curr,G_loss_curr) )
-        
