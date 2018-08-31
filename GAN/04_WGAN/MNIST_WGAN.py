@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import os
 
-mb_size = 32
+mb_size = 128
 X_dim = 784
 Z_dim = 10
 H_dim = 128
@@ -90,7 +90,7 @@ if not os.path.exists( './out/' ):
     os.makedirs( './out/' )
 
 i = 0
-n = 25000
+n = 100000
 
 test_sample = sample_Z( 16, Z_dim )
 
