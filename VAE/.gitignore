@@ -1,0 +1,4 @@
+MNIST_data/*
+*/checkpoints/*
+*.pkl
+*/out/*
