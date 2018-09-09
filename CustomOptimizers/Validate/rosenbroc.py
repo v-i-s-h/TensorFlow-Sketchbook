@@ -1,5 +1,7 @@
 
 import tensorflow as tf
+
+from tensorflow.contrib.opt import PowerSignOptimizer as PSO
 import numpy as np
 
 # Setup Custom Module Path
@@ -49,7 +51,8 @@ def RosenbrockOpt( optimizer, MAX_EPOCHS = 4000, MAX_STEP = 100 ):
 list_of_opt = {
     # "SGD(0.0007)": tf.train.GradientDescentOptimizer(0.0007),
     "SGD(0.0006)": tf.train.GradientDescentOptimizer(0.0006),
-    "PowerSign": Optimizers.PowerSignOptimizer()
+    "PowerSign": Optimizers.PowerSignOptimizer(),
+    "PSO": PSO( learning_rate = 0.000025, base = 0.05, beta = 50 )
 }
 
 data = []

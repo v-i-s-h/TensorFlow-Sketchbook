@@ -9,7 +9,7 @@ from tensorflow.python.training import optimizer
 import tensorflow as tf
 
 class PowerSignOptimizer( optimizer.Optimizer ):
-    def __init__( self, learning_rate = 0.00002, alpha = 0.05, beta = 50, use_locking = False, name = "PowerSign" ):
+    def __init__( self, learning_rate = 0.000025, alpha = 0.05, beta = 50, use_locking = False, name = "PowerSign" ):
         super( PowerSignOptimizer, self ).__init__( use_locking, name )
         self._lr    = learning_rate
         self._alpha = alpha
