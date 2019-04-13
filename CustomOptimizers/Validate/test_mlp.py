@@ -10,8 +10,11 @@ import tensorflow.keras.backend as K
 
 import tensorflow as tf
 
-import Optimizers as Opt
-# from spsa import SimultaneousPerturbationOptimizer  # Replace with this
+# Setup Custom Module Path
+import os, sys
+sys.path.append( './../' )
+
+import Optimizers3 as Opt
 
 import numpy as np
 
@@ -52,9 +55,11 @@ with tf.name_scope("Model"):
 params = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "Model")
 
 # trainer = tf.train.GradientDescentOptimizer(learning_rate=0.5)   # This works
-trainer = Opt.SimultaneousPerturbationOptimizer(a=0.05,c=0.05,alpha=0.99,gamma=0.40)   # This don't
+trainer = Opt.SPSA(learning_rate=0.5)   # This don't
 # _train = trainer.minimize(loss, var_list=params)
-_train = trainer.minimize(loss)
+# _train = trainer.minimize(loss)
+grads_and_vars = trainer.compute_gradients(loss)
+_train = trainer.apply_gradients(grads_and_vars)
 
 sess = K.get_session()
 
@@ -65,6 +70,7 @@ print(sess.run(params[:2]))   # Print
 
 for i in range(20):
   l, _ = sess.run([loss,_train], feed_dict={inputs:x_train,y_ph_tf:y_train})
+  print("{:4d}: {:f}".format(i, l))
   
 print(">>>>>> POST")
 print(sess.run(params[:2]))

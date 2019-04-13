@@ -141,6 +141,3 @@ class SimultaneousPerturbationOptimizer(tf.train.Optimizer):
 
 
 # ======================================================================================================================
-class MyOpt(tf.train.GradientDescentOptimizer):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
