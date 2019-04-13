@@ -1,6 +1,6 @@
 
 # SPSA
-from SPSA import SimultaneousPerturbationOptimizer
+from .SPSA import SimultaneousPerturbationOptimizer
 
 # Power Sign optimizer
-from PowerSign import PowerSignOptimizer
+from .PowerSign import PowerSignOptimizer
