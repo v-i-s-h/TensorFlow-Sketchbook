@@ -15,7 +15,7 @@ test_images = test_images.reshape((-1, 28, 28, 1))
 train_images = train_images / 127.5 - 1.0
 test_images = test_images / 127.5 - 1.0
 
-model = load_model("./models/bnn_mnist.model")
+model = load_model("./models/bnn_mnist_ln.model")
 
 test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=0)
 print("Test data   loss = {:.3f}    acc = {:.2f}".format(test_loss, test_acc))
@@ -28,11 +28,19 @@ layer_outs = functor(test_images)
 for (idx, out) in enumerate(layer_outs):
     print("{:3d}    {}".format(idx, out.shape))
 
+# Get weights from last layers
+for i in range(3):
+    this_layer = model.layers[-1 - i]
+    for d in dir(this_layer):
+        if not d.startswith("_"):
+            print(d)
+    weights = this_layer.get_weights()
+    print([w.shape for w in weights])
+    print("==================")
 
-fig, ax = plt.subplots(3, 1)
 
-ax[0].hist(layer_outs[-1])
-ax[1].hist(layer_outs[-2])
-ax[2].hist(layer_outs[-3])
-
-plt.show()
+# fig, ax = plt.subplots(3, 1)
+# ax[0].hist(layer_outs[-1])
+# ax[1].hist(layer_outs[-2])
+# ax[2].hist(layer_outs[-3])
+# plt.show()

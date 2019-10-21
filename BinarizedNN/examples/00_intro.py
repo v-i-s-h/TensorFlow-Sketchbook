@@ -25,21 +25,26 @@ model.add(lq.layers.QuantConv2D(32, (3, 3), kernel_quantizer="ste_sign",
 
 # Create model
 model.add(tf.keras.layers.MaxPooling2D((2, 2)))
-model.add(tf.keras.layers.BatchNormalization(scale=False))
+# model.add(tf.keras.layers.BatchNormalization(scale=False))
+model.add(tf.keras.layers.LayerNormalization(scale=False))
 
 model.add(lq.layers.QuantConv2D(64, (3, 3), use_bias=False, **kwargs))
 model.add(tf.keras.layers.MaxPooling2D((2, 2)))
-model.add(tf.keras.layers.BatchNormalization(scale=False))
+# model.add(tf.keras.layers.BatchNormalization(scale=False))
+model.add(tf.keras.layers.LayerNormalization(scale=False))
 
 model.add(lq.layers.QuantConv2D(64, (3, 3), use_bias=False, **kwargs))
-model.add(tf.keras.layers.BatchNormalization(scale=False))
+# model.add(tf.keras.layers.BatchNormalization(scale=False))
+model.add(tf.keras.layers.LayerNormalization(scale=False))
 model.add(tf.keras.layers.Flatten())
 
 model.add(lq.layers.QuantDense(64, use_bias=False, **kwargs))
-model.add(tf.keras.layers.BatchNormalization(scale=False))
+# model.add(tf.keras.layers.BatchNormalization(scale=False))
+model.add(tf.keras.layers.LayerNormalization(scale=False))
 
 model.add(lq.layers.QuantDense(10, use_bias=False, **kwargs))
-model.add(tf.keras.layers.BatchNormalization(scale=False))
+# model.add(tf.keras.layers.BatchNormalization(scale=False))
+model.add(tf.keras.layers.LayerNormalization(scale=False))
 model.add(tf.keras.layers.Activation("softmax"))
 
 # Summary
@@ -53,4 +58,4 @@ model.fit(train_images, train_labels, batch_size=64, epochs=6)
 test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=0)
 print("Test data   loss = {:.3f}    acc = {:.2f}".format(test_loss, test_acc))
 
-model.save("./models/bnn_mnist.model")
+model.save("./models/bnn_mnist_ln.model")
