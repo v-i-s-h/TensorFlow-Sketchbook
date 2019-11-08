@@ -8,10 +8,10 @@ from tensorflow.keras.layers import InputLayer, Dense, BatchNormalization, Activ
 from sacred import Experiment
 from sacred.observers import MongoObserver
 
-ex = Experiment('My_Experiment')
+ex = Experiment('TestExperiment')
 my_url = '127.0.0.1:27017'  # Or <server-static-ip>:<port> if running on server
 ex.observers.append(MongoObserver.create(url=my_url,
-                                         db_name='my_database'))
+                                         db_name='test_data'))
 
 
 @ex.config
