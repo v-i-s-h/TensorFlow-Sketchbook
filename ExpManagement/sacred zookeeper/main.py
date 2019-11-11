@@ -1,5 +1,6 @@
 # An attempt to make zookeeper scared
 # Ex: TF_CPP_MIN_LOG_LEVEL=2 python main.py train fcn --dataset mnist --hparams activation="sigmoid"
+#     TF_CPP_MIN_LOG_LEVEL=2 python main.py train fcn --dataset mnist --hparams activation="relu" --observer file_storage=./test/logs
 
 from os import path
 import click, json
@@ -56,15 +57,16 @@ class default(HParams):
     #     return tf.keras.optimizers.Adam(self.lr, beta_1=self.beta_1, beta_2=self.beta_2)
 
 @cli.command()
-@click.option("--expname", default="Default Experiment")
+@click.option("--expname", default="Demo Experiment")
+@click.option("--observer", default="mongo_db=127.0.0.1:27018:demo_data")
 @build_train()
-def train(build_model, dataset, hparams, logdir, expname):
+def train(build_model, dataset, hparams, logdir, expname, observer):
 
     # Location to save trained models
     output_dir = path.join(logdir, "test")
 
     # Create the actual train function to run
-    def _train(_run):
+    def train(_run):
         model = build_model(hparams, **dataset.preprocessing.kwargs)
 
         # Make optimizer
@@ -98,22 +100,19 @@ def train(build_model, dataset, hparams, logdir, expname):
     config = {}
     for (k, v) in hparams.items():
         config[k] = v
-    # TODO: add model and dataset information also to config
-    
+    config["model"] = build_model.__name__
+    config["dataset"] = dataset.dataset_name
+
     # Setup sacred experiment
     ex = Experiment(expname)
-    my_url = '127.0.0.1:27018'  # Or <server-static-ip>:<port> if running on server
-    ex.observers.append(MongoObserver.create(url=my_url,
-                                         db_name='demo_data'))
-    ex.main(_train)
+    # Disable capturing the output from window
+    ex.captured_out_filter = lambda captured_output: "Output capturing turned off." 
+    ex.main(train)
     ex.add_config(config)
 
-
     # build argv for sacred -- hacky way!
-    _argv = f"{ex.default_command}"
+    _argv = f"{ex.default_command} --{observer}"
     ex.run_commandline(argv=_argv)
-
-    click.echo("End of train")
 
 if __name__ == "__main__":
     cli()
